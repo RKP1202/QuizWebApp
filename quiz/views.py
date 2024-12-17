@@ -1,45 +1,60 @@
-from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 from .models import Question, Student
-from django.contrib import messages
-import random
+import json
 
-# Starting the quiz
-def start_quiz(request):
-    random_question = Question.objects.order_by('?').first()
-
-    options = random_question.options.all()
-
-    context = {
-        'question': random_question,
-        'options': options,
-    }
-    return render(request, 'quiz/question.html', context)
+@csrf_exempt
+def questions(request):
+    if request.method == 'GET':
+        questions = Question.objects.all().values()
+        return JsonResponse(list(questions), safe=False)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
+@csrf_exempt
 def has_taken_quiz(request):
-    if request.method == "POST":
-        username = request.POST.get("username").upper()
-        student, created = Student.objects.get_or_create(username=username)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get("username", "").strip().upper()
 
-        if student.status == "done":
-            messages.error(request, f'{username} has already taken the quiz.')
-            return redirect('start_quiz')
+            if not username:
+                return JsonResponse({"error": "Username is required!"}, status=400)
 
-        messages.success(request, "Proceed to take your quiz.")
-        return redirect('start_quiz')
+            student, created = Student.objects.get_or_create(username=username)
 
-#  quiz submission
+            if student.status == "done":
+                return JsonResponse({"error": f"{username} has already taken the quiz."}, status=403)
+
+            return JsonResponse({"message": "Proceed to take your quiz"})
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+@csrf_exempt
 def submit_quiz(request):
-    if request.method == "POST":
-        username = request.POST.get("username").upper()
-        score = int(request.POST.get("score"))
-        
-        student = Student.objects.get(username=username)
-        student.score = score
-        student.status = "done"
-        student.save()
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get("username", "").strip().upper()
+            score = data.get("score", None)
 
-        return redirect('quiz_submitted')  
+            if not username or score is None:
+                return JsonResponse({"error": "Username and score are required!"}, status=400)
 
-def quiz_submitted(request):
-    return render(request, 'quiz/submission_success.html')
+            try:
+                score = int(score)
+            except ValueError:
+                return JsonResponse({"error": "Invalid score value!"}, status=400)
+
+            student = get_object_or_404(Student, username=username)
+            student.score = score
+            student.status = "done"
+            student.save()
+
+            return JsonResponse({"message": "Quiz submitted successfully!"})
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
