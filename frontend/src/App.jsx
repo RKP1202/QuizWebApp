@@ -1,21 +1,16 @@
-import React from 'react'
-import Loader from './components/Loader'
-import Header from './components/Header'
-import ErrorScreen from './components/ErrorScreen'
-import Main from './components/Main'
+import React, { useState } from "react";
+import Home from "./components/InitialDispaly";
+import Quiz from "./components/Quiz";
+import { submitQuiz } from "./services/Question";
 
 const App = () => {
-  return (
-    <div className="app">
+  const [user, setUser] = useState("");
 
-      <Header />
-      <Main>
-        <Loader />
-        <ErrorScreen />
-      </Main>
+  if (!user) {
+    return <Home setUser={setUser} />;
+  }
 
-    </div >
-  )
-}
+  return <Quiz user={user} submitQuiz={submitQuiz} />;
+};
 
-export default App
+export default App;
