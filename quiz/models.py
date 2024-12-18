@@ -27,10 +27,6 @@ class QuestionOption(models.Model):
     option = models.CharField(max_length=300)
     is_correct = models.BooleanField(default=False)
     
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['question', 'is_correct'], name='unique_correct_option')
-        ]
 
     def __str__(self):
         return f"{self.option} for {self.question.question}"

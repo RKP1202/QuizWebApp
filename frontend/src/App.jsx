@@ -1,16 +1,29 @@
-import React, { useState } from "react";
-import Home from "./components/InitialDispaly";
-import Quiz from "./components/Quiz";
-import { submitQuiz } from "./services/Question";
 
-const App = () => {
-  const [user, setUser] = useState("");
+import React, { useState } from 'react';
+import InitialDisplay from './components/InitialDispaly';
+import Quiz from './components/Quiz';
 
-  if (!user) {
-    return <Home setUser={setUser} />;
-  }
+function App() {
+  const [user, setUser] = useState(null);
+  const [numQuestions, setNumQuestions] = useState(10);
 
-  return <Quiz user={user} submitQuiz={submitQuiz} />;
-};
+  return (
+    <div>
+      {!user ? (
+        <InitialDisplay 
+          setUser={setUser} 
+          setNumQuestions={setNumQuestions} 
+        />
+      ) : (
+        <Quiz 
+          user={user} 
+          numQuestions={numQuestions} 
+        />
+      )}
+    </div>
+  );
+}
 
 export default App;
+
+
