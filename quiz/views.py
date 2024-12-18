@@ -15,6 +15,7 @@ def questions(request):
 @api_view(['POST'])
 def has_taken_quiz(request):
     username = request.data.get("username")
+    
     username = username.upper()
     student, created = Student.objects.get_or_create(username=username)
     if student.status == "done":

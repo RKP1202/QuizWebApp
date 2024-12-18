@@ -3,7 +3,7 @@ from .models import Student, Question, QuestionOption
 
 
 
-class Student(serializers.ModelSerializer):
+class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student 
         fields = ["id", "username", "score", "status"]
