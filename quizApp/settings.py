@@ -57,11 +57,12 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:8080",
-"http://localhost:5173",
-"https://quizapp-zz59.onrender.com"
-"https://quizwebappfrontend.onrender.com"
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "https://quizapp-zz59.onrender.com",
+    "https://quizwebappfrontend.onrender.com",
 ]
+
 
 ROOT_URLCONF = 'quizApp.urls'
 
