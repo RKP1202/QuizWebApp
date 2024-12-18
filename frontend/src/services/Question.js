@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BaseUrl = "http://127.0.0.1:8000/api"; // Django backend URL
+const BaseUrl = "https://quizapp-zz59.onrender.com/api"; // Django backend URL
 
 export const getRandomQuestions = async (numQuestions) => {
   try {
